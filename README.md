@@ -41,7 +41,7 @@ Remediarr is a lightweight webhook service that automatically fixes common media
 version: '3.8'
 services:
   remediarr:
-    image: ghcr.io/sbcrumb/remediarr:latest
+    image: ghcr.io/jjtjp94/remediarr:latest
     container_name: remediarr
     ports:
       - "8189:8189"
@@ -82,7 +82,7 @@ docker run -d \
   -e JELLYSEERR_API_KEY=your-api-key \
   -e BAZARR_URL=http://bazarr:6767 \
   -e BAZARR_API_KEY=your-api-key \
-  ghcr.io/sbcrumb/remediarr:latest
+  ghcr.io/jjtjp94/remediarr:latest
 ```
 
 ## Jellyseerr Configuration
@@ -307,7 +307,7 @@ This enables detailed logging of webhook processing, keyword matching, and API c
 
 ### Local Development
 ```bash
-git clone https://github.com/sbcrumb/remediarr.git
+git clone https://github.com/jjtjp94/remediarr.git
 cd remediarr
 cp .env.example .env
 # Edit .env with your settings
@@ -322,9 +322,9 @@ docker run --rm -p 8189:8189 --env-file .env remediarr:dev
 
 ## Container Images
 
-- **Latest stable**: `ghcr.io/sbcrumb/remediarr:latest`
-- **Version tagged**: `ghcr.io/sbcrumb/remediarr:v1.0.0`  
-- **Development**: `ghcr.io/sbcrumb/remediarr:dev`
+- **Latest stable**: `ghcr.io/jjtjp94/remediarr:latest`
+- **Version tagged**: `ghcr.io/jjtjp94/remediarr:v1.0.0`  
+- **Development**: `ghcr.io/jjtjp94/remediarr:dev`
 
 ## Contributing
 
@@ -344,8 +344,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/sbcrumb/remediarr/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/sbcrumb/remediarr/discussions)
+- **Issues**: [GitHub Issues](https://github.com/jjtjp94/remediarr/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jjtjp94/remediarr/discussions)
 - **Documentation**: Check the `.env.example` file for all configuration options
 
 ## 💖 Donations

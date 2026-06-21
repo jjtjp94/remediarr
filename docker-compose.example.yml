@@ -1,7 +1,8 @@
 services:
   remediarr:
     # --- Use published image from GHCR (recommended) ---
-    image: ghcr.io/sbcrumb/remediarr:latest
+    # Upstream: ghcr.io/sbcrumb/remediarr:latest
+    image: ghcr.io/jjtjp94/remediarr:latest
 
     # --- Or build locally from source (uncomment to use) ---
     # build:

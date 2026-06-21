@@ -39,7 +39,7 @@ Create `docker-compose.yml`:
 version: '3.8'
 services:
   remediarr:
-    image: ghcr.io/sbcrumb/remediarr:latest
+    image: ghcr.io/jjtjp94/remediarr:latest
     container_name: remediarr
     ports:
       - "8189:8189"
