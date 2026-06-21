@@ -3,6 +3,7 @@
 **Automated issue resolution for Jellyseerr via Sonarr & Radarr webhooks**
 
 > ⚠️ **Work in Progress**: Remediarr is under active development. Configuration options, API endpoints, and behavior may change between versions. Please check the changelog and update your configuration when upgrading. Feedback and bug reports are welcome!
+> 🍴 **Fork Additions**: This fork adds **🚫 Blocklist on Delete** as an opt-in functionality to Blocklist the deleted release in Sonarr/Radarr so the next search grabs a *different* copy instead of potentially re-downloading the same one
 
 Remediarr is a lightweight webhook service that automatically fixes common media issues reported through Jellyseerr. When users report problems like "no audio" or "wrong movie", Remediarr detects the keywords, deletes problematic files, triggers new downloads, and closes the issue—all without manual intervention.
 
@@ -13,7 +14,7 @@ Remediarr is a lightweight webhook service that automatically fixes common media
 - **🤖 Smart Keyword Detection**: Recognizes issue types from user comments
 - **🏷️ Type-Driven Mode** *(opt-in)*: Let the Jellyseerr issue **Type** pick the action — no keywords needed (`ISSUE_TYPE_AS_BUCKET`)
 - **✅ Confirm-on-Import** *(opt-in)*: Hold the issue open until Sonarr confirms the replacement imported — it closes only when the file is actually on disk (`CONFIRM_REPLACEMENT_IMPORT`)
-`` - **🚫 Blocklist on Delete** *(opt-in)*: Blocklist the deleted release in Sonarr/Radarr so the next search grabs a *different* copy instead of re-downloading the same one (`BLOCKLIST_ON_DELETE`)== ``
+- **🚫 Blocklist on Delete** *(opt-in)*: Blocklist the deleted release in Sonarr/Radarr so the next search grabs a *different* copy instead of re-downloading the same one (`BLOCKLIST_ON_DELETE`)==
 - **💬 User Coaching**: Suggests correct keywords when users don't use recognizable terms
 - **🔄 Loop Prevention**: Avoids processing its own comments and resolved issues
 - **📱 Notifications**: Optional Gotify and Apprise integration
@@ -34,7 +35,7 @@ Remediarr is a lightweight webhook service that automatically fixes common media
 
 > **Confirm-on-import (opt-in):** set `CONFIRM_REPLACEMENT_IMPORT=true` and steps 6–7 are deferred — Remediarr posts an interim comment and closes only when Sonarr's On-Import webhook confirms the new file actually landed on disk (see the [setup note](#optional-settings) below).
 
-`` > **Blocklist on Delete (opt-in):** set `BLOCKLIST_ON_DELETE=true` and steps 5 uses blocklist to keep the bad file from being re-grabbed. Without this, the script relies on Sonarr's dedup to avoid grabbing the same file. Useful if you find yourself having issues with multiple copies of the same episode/movie.  ``
+> **Blocklist on Delete (opt-in):** set `BLOCKLIST_ON_DELETE=true` and steps 5 uses blocklist to keep the bad file from being re-grabbed. Without this, the script relies on Sonarr's dedup to avoid grabbing the same file. Useful if you find yourself having issues with multiple copies of the same episode/movie.  ``
 
 ## Quick Start
 
