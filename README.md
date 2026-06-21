@@ -3,6 +3,7 @@
 **Automated issue resolution for Jellyseerr via Sonarr & Radarr webhooks**
 
 > ⚠️ **Work in Progress**: Remediarr is under active development. Configuration options, API endpoints, and behavior may change between versions. Please check the changelog and update your configuration when upgrading. Feedback and bug reports are welcome!
+
 > 🍴 **Fork Additions**: This fork adds **🚫 Blocklist on Delete** as an opt-in functionality to Blocklist the deleted release in Sonarr/Radarr so the next search grabs a *different* copy instead of potentially re-downloading the same one
 
 Remediarr is a lightweight webhook service that automatically fixes common media issues reported through Jellyseerr. When users report problems like "no audio" or "wrong movie", Remediarr detects the keywords, deletes problematic files, triggers new downloads, and closes the issue—all without manual intervention.
