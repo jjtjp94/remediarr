@@ -13,7 +13,7 @@ Remediarr is a lightweight webhook service that automatically fixes common media
 - **🤖 Smart Keyword Detection**: Recognizes issue types from user comments
 - **🏷️ Type-Driven Mode** *(opt-in)*: Let the Jellyseerr issue **Type** pick the action — no keywords needed (`ISSUE_TYPE_AS_BUCKET`)
 - **✅ Confirm-on-Import** *(opt-in)*: Hold the issue open until Sonarr confirms the replacement imported — it closes only when the file is actually on disk (`CONFIRM_REPLACEMENT_IMPORT`)
-- **🚫 Blocklist on Delete** *(opt-in)*: Blocklist the deleted release in Sonarr/Radarr so the next search grabs a *different* copy instead of re-downloading the same one (`BLOCKLIST_ON_DELETE`)
+`` - **🚫 Blocklist on Delete** *(opt-in)*: Blocklist the deleted release in Sonarr/Radarr so the next search grabs a *different* copy instead of re-downloading the same one (`BLOCKLIST_ON_DELETE`)== ``
 - **💬 User Coaching**: Suggests correct keywords when users don't use recognizable terms
 - **🔄 Loop Prevention**: Avoids processing its own comments and resolved issues
 - **📱 Notifications**: Optional Gotify and Apprise integration
@@ -33,6 +33,8 @@ Remediarr is a lightweight webhook service that automatically fixes common media
 > **Type-driven mode (opt-in):** set `ISSUE_TYPE_AS_BUCKET=true` and step 3 uses the issue **Type** (Audio/Video/Subtitle/Other) instead of comment keywords — the comment is ignored. Audio/Video/Subtitle delete + re-search; Other searches only.
 
 > **Confirm-on-import (opt-in):** set `CONFIRM_REPLACEMENT_IMPORT=true` and steps 6–7 are deferred — Remediarr posts an interim comment and closes only when Sonarr's On-Import webhook confirms the new file actually landed on disk (see the [setup note](#optional-settings) below).
+
+`` > **Blocklist on Delete (opt-in):** set `BLOCKLIST_ON_DELETE=true` and steps 5 uses blocklist to keep the bad file from being re-grabbed. Without this, the script relies on Sonarr's dedup to avoid grabbing the same file. Useful if you find yourself having issues with multiple copies of the same episode/movie.  ``
 
 ## Quick Start
 
