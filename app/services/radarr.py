@@ -88,6 +88,48 @@ async def latest_grab_timestamp(movie_id: int) -> Optional[datetime]:
                     return dt
     return None
 
+async def blocklist_movie_release(movie_id: int) -> bool:
+    """Mark the most recent grab for a movie as failed, adding the release to the blocklist.
+
+    Uses POST /api/v3/history/failed/{id} which tells Radarr the download was
+    bad.  Radarr adds the release to its blocklist so the next search skips it.
+    """
+    client = _client_lazy()
+    urls = [
+        f"{API}/history/movie?movieId={movie_id}&page=1&pageSize=20&sortDirection=descending",
+        f"{API}/history?movieId={movie_id}&page=1&pageSize=20&sortDirection=descending",
+    ]
+
+    history_id = None
+    for url in urls:
+        r = await client.get(url, headers=HEADERS)
+        if r.status_code >= 400:
+            continue
+        for ev in _parse_history_listish(r.json()):
+            if (ev.get("eventType") or "").lower() == "grabbed":
+                hid = ev.get("id")
+                if isinstance(hid, int):
+                    history_id = hid
+                    break
+        if history_id is not None:
+            break
+
+    if history_id is None:
+        log.warning("Movie %s: no grab history found to blocklist", movie_id)
+        return False
+
+    try:
+        r = await client.post(f"{API}/history/failed/{history_id}", headers=HEADERS)
+        if r.status_code < 400:
+            log.info("Movie %s: blocklisted grab history %s", movie_id, history_id)
+            return True
+        log.warning("Movie %s: blocklist history %s failed: HTTP %s", movie_id, history_id, r.status_code)
+        return False
+    except Exception as e:
+        log.warning("Movie %s: blocklist history %s failed: %s", movie_id, history_id, e)
+        return False
+
+
 async def has_new_grab_since(movie_id: int, baseline: Optional[datetime]) -> bool:
     client = _client_lazy()
     urls = [

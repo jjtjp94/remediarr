@@ -13,6 +13,7 @@ Remediarr is a lightweight webhook service that automatically fixes common media
 - **🤖 Smart Keyword Detection**: Recognizes issue types from user comments
 - **🏷️ Type-Driven Mode** *(opt-in)*: Let the Jellyseerr issue **Type** pick the action — no keywords needed (`ISSUE_TYPE_AS_BUCKET`)
 - **✅ Confirm-on-Import** *(opt-in)*: Hold the issue open until Sonarr confirms the replacement imported — it closes only when the file is actually on disk (`CONFIRM_REPLACEMENT_IMPORT`)
+- **🚫 Blocklist on Delete** *(opt-in)*: Blocklist the deleted release in Sonarr/Radarr so the next search grabs a *different* copy instead of re-downloading the same one (`BLOCKLIST_ON_DELETE`)
 - **💬 User Coaching**: Suggests correct keywords when users don't use recognizable terms
 - **🔄 Loop Prevention**: Avoids processing its own comments and resolved issues
 - **📱 Notifications**: Optional Gotify and Apprise integration
@@ -145,6 +146,7 @@ Remediarr is configured entirely through environment variables. See the [complet
 | `BAZARR_API_KEY` | Bazarr API key | `jkl012...` |
 | `ISSUE_TYPE_AS_BUCKET` | When `true`, the Jellyseerr issue **Type** (Audio/Video/Subtitle/Other) drives the action and the **comment is ignored** — users can report an issue by type alone with no keywords required. Audio/Video/Subtitle → delete + re-search; Other → search only. The `*_KEYWORDS` lists are unused while this is on. Default `false`. | `false` |
 | `CONFIRM_REPLACEMENT_IMPORT` | When `true`, Remediarr holds an issue open after triggering a re-download and only comments + closes once the replacement is confirmed imported. TV issues wait for Sonarr's On Import webhook; movie issues wait for Radarr's. If the download never lands, the issue stays open as a signal for manual follow-up. Requires the webhook setup below for each arr you want to confirm. Default `false`. | `false` |
+| `BLOCKLIST_ON_DELETE` | When `true`, the deleted release is blocklisted in Sonarr/Radarr before triggering a new search. This prevents the same release from being grabbed again on repeat issues. Useful when the top-scoring release is consistently bad. Default `false`. | `false` |
 
 #### Setting up the Sonarr webhook (required for `CONFIRM_REPLACEMENT_IMPORT=true`)
 

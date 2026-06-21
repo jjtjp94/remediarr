@@ -111,18 +111,76 @@ async def latest_grab_timestamp(series_id: int, episode_ids: List[int]) -> Optio
             continue
         for ev in _parse_history_listish(r.json()):
             if (ev.get("eventType") or "").lower() == "grabbed":
-                data = ev.get("data") or {}
-                eid = data.get("episodeId")
+                eid = ev.get("episodeId")
                 dt = _to_dt(ev.get("date") or "")
                 if dt and (not episode_ids or eid in episode_ids):
                     return dt
     return None
 
-async def has_new_grab_since(series_id: int, episode_ids: List[int], baseline: Optional[datetime]) -> bool:
+async def blocklist_episode_releases(series_id: int, episode_ids: List[int]) -> int:
+    """Mark the most recent grab for each episode as failed, adding releases to the blocklist.
+
+    Uses POST /api/v3/history/failed/{id} which tells Sonarr the download was
+    bad.  Sonarr adds the release to its blocklist so the next search skips it.
+    Returns the number of releases successfully blocklisted.
+    """
     client = _client_lazy()
     urls = [
         f"{API}/history/series?seriesId={series_id}&page=1&pageSize=50&sortDirection=descending",
         f"{API}/history?seriesId={series_id}&page=1&pageSize=50&sortDirection=descending",
+    ]
+
+    ep_set = set(episode_ids)
+    found: set = set()
+    to_blocklist: List[int] = []
+
+    for url in urls:
+        r = await client.get(url, headers=HEADERS)
+        if r.status_code >= 400:
+            continue
+        for ev in _parse_history_listish(r.json()):
+            if (ev.get("eventType") or "").lower() != "grabbed":
+                continue
+            eid = ev.get("episodeId")
+            hid = ev.get("id")
+            if not isinstance(hid, int):
+                continue
+            if eid in ep_set and eid not in found:
+                found.add(eid)
+                to_blocklist.append(hid)
+                if found >= ep_set:
+                    break
+        if found >= ep_set:
+            break
+
+    blocklisted = 0
+    for hid in to_blocklist:
+        try:
+            r = await client.post(f"{API}/history/failed/{hid}", headers=HEADERS)
+            if r.status_code < 400:
+                blocklisted += 1
+                log.info("Blocklisted grab history %s for series %s", hid, series_id)
+            else:
+                log.warning("Blocklist history %s failed: HTTP %s", hid, r.status_code)
+        except Exception as e:
+            log.warning("Blocklist history %s failed: %s", hid, e)
+
+    log.info("Series %s blocklist_episode_releases: %s/%s", series_id, blocklisted, len(to_blocklist))
+    return blocklisted
+
+
+async def blocklist_season_releases(series_id: int, season: int) -> int:
+    """Blocklist the most recent grab for every episode in a season."""
+    episode_ids = await get_all_episode_ids_for_season(series_id, season)
+    if not episode_ids:
+        return 0
+    return await blocklist_episode_releases(series_id, episode_ids)
+
+
+async def has_new_grab_since(series_id: int, episode_ids: List[int], baseline: Optional[datetime]) -> bool:
+    client = _client_lazy()
+    urls = [
+        f"{API}/history/series?seriesId={series_id}&page=1&pageSize=50&sortDirection=descending",
         f"{API}/history?seriesId={series_id}&page=1&pageSize=50&sortDirection=descending",
     ]
     for url in urls:
@@ -131,8 +189,7 @@ async def has_new_grab_since(series_id: int, episode_ids: List[int], baseline: O
             continue
         for ev in _parse_history_listish(r.json()):
             if (ev.get("eventType") or "").lower() == "grabbed":
-                data = ev.get("data") or {}
-                eid = data.get("episodeId")
+                eid = ev.get("episodeId")
                 dt = _to_dt(ev.get("date") or "")
                 if dt and (baseline is None or dt > baseline) and (not episode_ids or eid in episode_ids):
                     return True
