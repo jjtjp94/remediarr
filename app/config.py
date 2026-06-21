@@ -90,6 +90,10 @@ class Settings(BaseSettings):
     # (search-only) and Bazarr-handled subtitle fixes still close at action time,
     # since neither produces a Sonarr import to wait for.
     CONFIRM_REPLACEMENT_IMPORT: bool = False
+    # When true, deleting a file also blocklists the release in Sonarr/Radarr
+    # (via POST /api/v3/history/failed) so the next search skips it and grabs
+    # a different copy instead of re-downloading the same one.
+    BLOCKLIST_ON_DELETE: bool = False
 
     # ===== Keyword buckets (comma-separated) =====
     TV_AUDIO_KEYWORDS: str = "no audio,no sound,missing audio,audio issue,wrong language,not in english"

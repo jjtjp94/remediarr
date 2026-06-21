@@ -535,6 +535,9 @@ async def _handle_movie(issue_id: int, movie: Dict[str, Any], bucket: str) -> No
     # Delete + re-search unless a remediation for this movie is already in flight.
     if not already_pending:
         if bucket in ("audio", "video", "subtitle", "wrong"):
+            if cfg.BLOCKLIST_ON_DELETE:
+                bl = await R.blocklist_movie_release(movie_id)
+                log.info("Blocklist for movie %s: %s", movie_id, "success" if bl else "skipped/failed")
             log.info("Deleting movie files for movie %s", movie_id)
             removed = await R.delete_moviefiles(movie_id)
             log.info("Deleted %s movie files", removed)
@@ -641,6 +644,9 @@ async def _handle_tv_specific_episodes(issue_id: int, series: Dict[str, Any], se
             log.info("No episode file in Sonarr for S%02dE%02d, skipping", season, ep_num)
             continue
         if bucket in ("audio", "video", "subtitle"):
+            if cfg.BLOCKLIST_ON_DELETE:
+                bl = await S.blocklist_episode_releases(series_id, ep_ids)
+                log.info("Blocklisted %s releases for S%02dE%02d", bl, season, ep_num)
             removed = await S.delete_episodefiles(series_id, ep_ids)
             log.info("Deleted %s files for S%02dE%02d", removed, season, ep_num)
         all_episode_ids.extend(ep_ids)
@@ -678,6 +684,9 @@ async def _handle_tv_season(issue_id: int, series: Dict[str, Any], season: int, 
         log.info("Falling back to traditional subtitle handling for series %s season %s", series_id, season)
 
     if bucket in ("audio", "video", "subtitle"):
+        if cfg.BLOCKLIST_ON_DELETE:
+            bl = await S.blocklist_season_releases(series_id, season)
+            log.info("Blocklisted %s releases for series %s season %s", bl, series_id, season)
         removed = await S.delete_all_episodefiles_for_season(series_id, season)
         log.info("Deleted %s episode files for series %s season %s", removed, series_id, season)
 
@@ -728,6 +737,9 @@ async def _handle_tv(issue_id: int, series: Dict[str, Any], season: int, episode
     if not already_pending:
         removed = 0
         if bucket in ("audio", "video", "subtitle"):
+            if cfg.BLOCKLIST_ON_DELETE:
+                bl = await S.blocklist_episode_releases(series_id, episode_ids)
+                log.info("Blocklisted %s releases for series %s", bl, series_id)
             log.info("Deleting episode files for series %s, episodes %s", series_id, episode_ids)
             removed = await S.delete_episodefiles(series_id, episode_ids)
             log.info("Deleted %s episode files", removed)
