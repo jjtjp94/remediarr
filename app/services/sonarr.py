@@ -111,8 +111,7 @@ async def latest_grab_timestamp(series_id: int, episode_ids: List[int]) -> Optio
             continue
         for ev in _parse_history_listish(r.json()):
             if (ev.get("eventType") or "").lower() == "grabbed":
-                data = ev.get("data") or {}
-                eid = data.get("episodeId")
+                eid = ev.get("episodeId")
                 dt = _to_dt(ev.get("date") or "")
                 if dt and (not episode_ids or eid in episode_ids):
                     return dt
@@ -183,7 +182,6 @@ async def has_new_grab_since(series_id: int, episode_ids: List[int], baseline: O
     urls = [
         f"{API}/history/series?seriesId={series_id}&page=1&pageSize=50&sortDirection=descending",
         f"{API}/history?seriesId={series_id}&page=1&pageSize=50&sortDirection=descending",
-        f"{API}/history?seriesId={series_id}&page=1&pageSize=50&sortDirection=descending",
     ]
     for url in urls:
         r = await client.get(url, headers=HEADERS)
@@ -191,8 +189,7 @@ async def has_new_grab_since(series_id: int, episode_ids: List[int], baseline: O
             continue
         for ev in _parse_history_listish(r.json()):
             if (ev.get("eventType") or "").lower() == "grabbed":
-                data = ev.get("data") or {}
-                eid = data.get("episodeId")
+                eid = ev.get("episodeId")
                 dt = _to_dt(ev.get("date") or "")
                 if dt and (baseline is None or dt > baseline) and (not episode_ids or eid in episode_ids):
                     return True
